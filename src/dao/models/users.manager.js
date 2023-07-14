@@ -7,7 +7,13 @@ const schema = new mongoose.Schema({
     last_name:String,
     email:String,
     age:Number,
-    password:String
+    password:String,
+    role: { type: String, default: function() {
+        if(this.email === "adminCoder@coder.com") {
+            return "Admin";
+        }
+        return "Usuario";
+    } }
 })
 
 const userModel = mongoose.model(collection,schema);

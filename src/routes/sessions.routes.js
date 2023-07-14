@@ -5,9 +5,10 @@ import passport from "passport";
 
 const router = Router();
 
+
 router.post(
     "/register",
-    passport.authenticate("register", { failureRedirect: "/failregister" }),
+    passport.authenticate("register", { failureRedirect: "/sessions/failregister" }),
     async (req, res) => {
         res.send({ status: "success", message: "User registered" });
     }
@@ -19,7 +20,7 @@ router.get("/failregister", (req, res) => {
 
 router.post(
     "/login",
-    passport.authenticate("login", { failureRedirect: "/faillogin" }),
+    passport.authenticate("login", { failureRedirect: "/sessions/faillogin" }),
     async (req, res) => {
         if (!req.user)
             return res
@@ -30,11 +31,12 @@ router.post(
             name: `${req.user.first_name} ${req.user.last_name}`,
             email: req.user.email,
             age: req.user.age,
+            role: req.user.role
         };
         res.send({
             status: "success",
             payload: req.session.user,
-            message: "¡Primer logueo realizado! :)",
+            message: "You logged in.",
         });
     }
 );
@@ -43,5 +45,13 @@ router.get("/faillogin", (req, res) => {
     res.status(400).send({ status: "error", error: "Login fail" });
 });
 
+router.get("/logout", (req, res) => {
+    req.session.destroy((err) => {
+        if(err) {
+            return res.status(500).send({status: "error", error: "Couldn´t logout."})
+        }
+        res.redirect("/login");
+    })
+})
 
 export default router;

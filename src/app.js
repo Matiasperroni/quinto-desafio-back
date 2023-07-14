@@ -70,7 +70,7 @@ app.set("view engine", "handlebars");
 
 //server http
 const serverHttp = app.listen(8080, () => {
-    console.log("Listening port 8080");
+    console.log("Listening to port 8080");
 });
 
 const productManager = new productsManagerDB();

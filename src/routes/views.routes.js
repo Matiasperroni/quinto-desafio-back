@@ -14,6 +14,27 @@ const router = Router();
 //     res.render("products", {products})
 // })
 
+//middlewares
+
+const isConnected = (req, res, next) => {
+    if(req.session.user) return res.redirect("/api/products")
+    next();
+}
+
+const isDisconnected = (req, res, next) => {
+    if(!req.session.user) return res.redirect("/login")
+    next();
+}
+
+const isAdmin = (req, res, next) => {
+    if(req.session.user.role === "Admin") {
+        console.log("Es admin");
+        //todo: cambiar el email, al email actual mas un tick de admin
+        // return req.session.user.email += "V";
+    }
+    next();
+}
+
 router.post("/chat/:user/:message", async(req, res) => {
     let user = req.params.user;
     let message = req.params.message;
@@ -28,15 +49,15 @@ router.get("/chat", async (req, res) => {
     res.render("chat", {chat})
 })
 
-router.get('/register', (req, res) => {
+router.get('/register', isConnected, (req, res) => {
     res.render('register');
 })
 
-router.get('/login', (req, res) => {
+router.get('/login',isConnected, (req, res) => {
     res.render('login');
 })
 
-router.get('/', (req, res) => {
+router.get('/', isDisconnected, isAdmin, (req, res) => {
     res.render('profile', {
         user: req.session.user
     });
